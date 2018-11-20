@@ -140,13 +140,13 @@ func main() {
 	// A ProducerConsumer object with maximum 1000 queued items.
 	pc := NewProducerConsumer(1000)
 
-	// Create 10 thread of producer and consumer each.
+	// Create 10 threads of producer and consumer each.
 	for i := 0; i < 10; i++ {
 		pc.CreateProducer(produce)
 		pc.CreateConsumer(consume)
 	}
 
-	// Wait for user-input for terminating the program.
+	// Wait for user-input instruction to terminate the program.
 	fmt.Scanln()
 	pc.Wait()
 }
