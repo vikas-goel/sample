@@ -1,0 +1,14 @@
+Permutations: swap(s,i) -> recurse(s+1,e) -> swap(s,i); result -> s==e
+BCoefficient: B(n,k) = B(n-1,k-1)+B(n-1,k); k==0||k==n -> 1
+8Queens: Permutations(0..7); valid -> abs(r1-r2) == abs(c1-c2)
+Coin change: Count[sum][coin_n]=Count[sum-coin_n][coin_n]+Count[sum][coin_n-1]
+LCS: LCS(s1,s2,e1,e2) = LCS(e1-1,e2-1),max(LCS(e1-1,e2),LCS(e1,e2-1));e1||e2=0->0
+
+
+Sorting:
+	Selection: O(n^2): Find minimum and swap till each elem.
+	Bubble: O(n^2): Swap in pairs till no swaps
+	Insertion: O(n^2): Insert ith elem in sorted 0..i-1
+	Merge: O(nLogn): Split half and merge back in sorted order
+	Quick: O(nLogn): Split on pivot, place pivot and sort both sections
+	Heap: O(nLogn): heapify all and extract max followed by heapify
