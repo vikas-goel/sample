@@ -8,14 +8,14 @@ type heap struct {
 	size, capacity int
 }
 
-func heapNew(capacity int) (h *heap) {
+func HeapNew(capacity int) (h *heap) {
 	h = new(heap)
 	h.capacity, h.size = capacity, 0
 	h.keys = make([]int, h.capacity)
 	return
 }
 
-func heapParent(h *heap, idx int) (pid int, ok bool) {
+func (h *heap) parentPosition(idx int) (pid int, ok bool) {
 	if h == nil || idx >= h.size {
 		return
 	}
@@ -24,72 +24,72 @@ func heapParent(h *heap, idx int) (pid int, ok bool) {
 	return
 }
 
-func heapLeftChild(h *heap, idx int) (pid int, ok bool) {
+func (h *heap) leftChildPosition(idx int) (cid int, ok bool) {
 	if h == nil || idx >= h.size {
 		return
 	}
 
-	pid = idx*2+1
-	if pid < h.size {
+	cid = idx*2+1
+	if cid < h.size {
 		ok = true
 	}
 
 	return
 }
 
-func heapRightChild(h *heap, idx int) (pid int, ok bool) {
+func (h *heap) rightChildPosition(idx int) (cid int, ok bool) {
 	if h == nil || idx >= h.size {
 		return
 	}
 
-	pid = idx*2+2
-	if pid < h.size {
+	cid = idx*2+2
+	if cid < h.size {
 		ok = true
 	}
 
 	return
 }
 
-func heapAdjust(h *heap, idx int) {
+func (h *heap) heapifyUp(idx int) {
 	if h == nil || idx <= 0 || idx >= h.size {
 		return
 	}
 
-	for i := idx; i != 0; {
-		pidx, _ := heapParent(h, i)
-		if h.keys[pidx] > h.keys[i] {
-			h.keys[pidx], h.keys[i] = h.keys[i], h.keys[pidx]
-			i = pidx
+	for idx != 0 {
+		pidx, _ := h.parentPosition(idx)
+		if h.keys[pidx] > h.keys[idx] {
+			h.keys[pidx], h.keys[idx] = h.keys[idx], h.keys[pidx]
+			idx = pidx
 		} else {
 			break
 		}
 	}
 }
 
-func heapify(h *heap, idx int) {
+func (h *heap) heapifyDown(idx int) {
 	if idx >= h.size {
 		return
 	}
 
 	min := idx
 
-	cid, ok := heapLeftChild(h, idx)
+	cid, ok := h.leftChildPosition(idx)
 	if ok && h.keys[cid] < h.keys[min] {
 		min = cid
-	}
 
-	cid, ok = heapRightChild(h, idx)
-	if ok && h.keys[cid] < h.keys[min] {
-		min = cid
+		cid, ok = h.rightChildPosition(idx)
+		if ok && h.keys[cid] < h.keys[min] {
+			min = cid
+		}
 	}
 
 	if min != idx {
 		h.keys[idx], h.keys[min] = h.keys[min], h.keys[idx]
-		heapify(h, min)
+		h.heapifyDown(min)
 	}
 }
 
-func heapInsert(h *heap, key int) bool {
+func (h *heap) Insert(key int) bool {
 	if h.size == h.capacity {
 		return false
 	}
@@ -97,34 +97,34 @@ func heapInsert(h *heap, key int) bool {
 	h.keys[h.size] = key
 	h.size++
 
-	heapAdjust(h, h.size-1)
+	h.heapifyUp(h.size-1)
 
 	return true
 }
 
-func heapDelete(h *heap, idx int) bool {
+func (h *heap) Delete(idx int) bool {
 	if h == nil || idx >= h.size {
 		return false
 	}
 
-	heapDecreaseKey(h, idx, math.MinInt32)
-	heapExtractMin(h)
+	h.DecreaseKey(idx, math.MinInt32)
+	h.ExtractMin()
 
 	return true
 }
 
-func heapDecreaseKey(h *heap, idx, key int) bool {
+func (h *heap) DecreaseKey(idx, key int) bool {
 	if h == nil || idx >= h.size || h.keys[idx] <= key {
 		return false
 	}
 
 	h.keys[idx] = key
-	heapAdjust(h, idx)
+	h.heapifyUp(idx)
 
 	return true
 }
 
-func heapExtractMin(h *heap) (min int, ok bool) {
+func (h *heap) ExtractMin() (min int, ok bool) {
 	if h == nil || h.size == 0 {
 		return
 	} else if h.size == 1 {
@@ -138,41 +138,41 @@ func heapExtractMin(h *heap) (min int, ok bool) {
 	min = h.keys[0]
 	h.keys[0] = h.keys[h.size]
 	ok = true
-	heapify(h, 0)
+	h.heapifyDown(0)
 
 	return
 }
 
-func heapPrint(h *heap) {
+func (h *heap) Print() {
 	fmt.Println(h.keys)
 }
 
 func buildHeap(keys ...int) (h *heap) {
-	h = heapNew(len(keys))
+	h = HeapNew(len(keys))
 	for _, k := range keys {
-		heapInsert(h, k)
+		h.Insert(k)
 	}
 	return
 }
 
 func main() {
-	h := heapNew(11)
-	heapInsert(h, 3)
-	heapPrint(h)
-	heapInsert(h, 2)
-	heapPrint(h)
-	heapDelete(h, 1)
-	heapPrint(h)
-	heapInsert(h, 15)
-	heapPrint(h)
-	heapInsert(h, 5)
-	heapPrint(h)
-	heapInsert(h, 4)
-	heapPrint(h)
-	heapInsert(h, 45)
-	heapPrint(h)
-	heapExtractMin(h)
-	heapPrint(h)
-	heapDecreaseKey(h, 2, 1)
-	heapPrint(h)
+	h := HeapNew(11)
+	h.Insert(3)
+	h.Print()
+	h.Insert(2)
+	h.Print()
+	h.Delete(1)
+	h.Print()
+	h.Insert(15)
+	h.Print()
+	h.Insert(5)
+	h.Print()
+	h.Insert(4)
+	h.Print()
+	h.Insert(45)
+	h.Print()
+	h.ExtractMin()
+	h.Print()
+	h.DecreaseKey(2, 1)
+	h.Print()
 }

@@ -160,7 +160,7 @@ func (g *graph) print() {
 }
 
 func main() {
-	g := graphNew(false, 4)
+	g := graphNew(true, 4)
 	g.edgeAdd(0, 1)
 	g.edgeAdd(0, 2)
 	//g.edgeAdd(1, 2)

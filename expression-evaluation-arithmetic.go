@@ -87,7 +87,7 @@ func hasPrecedence(oper1, oper2 byte) bool {
 
 	if (oper1 == '*' || oper1 == '/') && (oper2 == '+' || oper2 == '-') {
 		return false
-	} 
+	}
 
 	return true
 }

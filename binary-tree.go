@@ -82,6 +82,23 @@ func (root *node) connectPeers() {
 	}
 }
 
+func (this *node) connectPeersPerfect() {
+	if this == nil {
+		return
+	}
+
+	for first = this; first.left != nil; first = first.left {
+		for current, last := first, nil; current != nil; current = current.peer {
+			if last != nil {
+				last.peer = current.left
+			}
+
+			current.left.peer = current.right
+			last = current.right
+		}
+	}
+}
+
 func (root *node) printPeers() {
 	for ; root != nil; root = root.peer {
 		fmt.Print(root.key, " ")
@@ -324,7 +341,6 @@ func (root *node) isBST(left, right *node) bool {
 	}
 
 	return root.left.isBST(left, root) && root.right.isBST(root, right)
-
 }
 
 func (root *node) searchLCA(key1, key2 int) (lca int) {
@@ -364,7 +380,7 @@ func (root *node) searchLCA(key1, key2 int) (lca int) {
 
 func (root *node) sumPair(sum int) (key1, key2 int, found bool) {
 	if root == nil {
-		return 
+		return
 	}
 
 	length1, length2 := 0, 0
@@ -635,7 +651,6 @@ func bsTree(keys ...int) (root *node) {
 }
 
 func main() {
-	
 	roots := []*node{binTree1(), binTree2(), binTree3(), binTree4(), binTree7(), bsTree()}
 
 	for _, root := range roots {

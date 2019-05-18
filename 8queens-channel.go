@@ -11,16 +11,10 @@ func main() {
 	valid := 0
 	start := time.Now()
 	ch := make(chan []int)
-	wg := make(chan bool)
 
 	go func() {
-		defer func(){ wg <- true }()
+		defer func(){ close(ch) }()
 		cadidateBoards(ch, initBoard, 0, len(initBoard)-1)
-	}()
-
-	go func() {
-		<- wg
-		close(ch)
 	}()
 
 	allBoards := collectBoards(ch, &valid)
@@ -29,7 +23,7 @@ func main() {
 	fmt.Println("Execution time:", time.Since(start))
 }
 
-func cadidateBoards(ch chan []int, board []int, start, end int) {
+func cadidateBoards(ch chan<- []int, board []int, start, end int) {
 	if start == end {
 		newBoard := []int{0, 0, 0, 0, 0, 0, 0, 0}
 		copy(newBoard, board)
@@ -43,7 +37,7 @@ func cadidateBoards(ch chan []int, board []int, start, end int) {
 	}
 }
 
-func collectBoards(ch chan []int, valid *int) (boards [][]int) {
+func collectBoards(ch <-chan []int, valid *int) (boards [][]int) {
 	for b := range ch {
 		boards = append(boards, b)
 

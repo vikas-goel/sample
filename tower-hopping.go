@@ -39,8 +39,9 @@ func canHopTowers(tower []int) int {
 
 			hopTowersFrom(next)
 			if hops[next] < hops[source]-1 {
-				// The next tower is either crossing the given set or hoppable.
-				// So, the source tower is hoppable.
+				// The next tower is either crossing the given
+				// set or hoppable. So, the source tower is
+				// hoppable.
 				hops[source] = hops[next]+1
 				path[source] = next
 			}

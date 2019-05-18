@@ -21,10 +21,7 @@ func sortIntegersAll(nums ...int) {
 
 func sortIntegers(fn sortMethod, nums ...int) {
 	array := make([]int, len(nums))
-	for i, n := range nums {
-		array[i] = n
-	}
-
+	copy(array, nums)
 	fmt.Print(array, "->")
 	name, iters, swaps := fn(array, len(array))
 	fmt.Printf("%v:(%2v,%2v):%v sort\n", array, iters, swaps, name)
