@@ -4,7 +4,7 @@
 // a time. A node can distribute the file only when the file is available to it.
 // Initially, the file is available only on node-0.
 //
-// Implement a synchronous function distribute(n int) that distributes the file/// to all n nodes.
+// Implement a synchronous function distribute(n int) that distributes the file to all the n nodes.
 
 package main
 
@@ -15,9 +15,9 @@ import (
 )
 
 func Copy(src, dst int) {
+	fmt.Printf("Copy from %3v to %3v in progress\n", src, dst)
 	time.Sleep(time.Millisecond * time.Duration(1000))
-	fmt.Printf("%3v -> %3v\n", src, dst)
-	//fmt.Printf("%3v ", dst)
+	fmt.Printf("Copy from %3v to %3v is completed\n", src, dst)
 }
 
 type Distributor struct {
@@ -32,14 +32,14 @@ func (this *Distributor) Distribute(src int) {
 	check := false
 	for i := 1; i <= this.maxcp && this.nodes > 0; i++ {
 		check = true
-		go this.Copy(src, notify)
+		go this.copyAndFanOut(src, notify)
 	}
 
 	// Start file distribution as soon as bandwidth available and there
-	// are nodes without that need the file.
+	// are nodes that need the file.
 	for check {
 		if check = <-notify; check {
-			go this.Copy(src, notify)
+			go this.copyAndFanOut(src, notify)
 		}
 	}
 
@@ -48,15 +48,27 @@ func (this *Distributor) Distribute(src int) {
 	}
 }
 
-func (this *Distributor) Copy(src int, notify chan<- bool) {
+func (this *Distributor) getNextNodeId() (nextNode int) {
+	if this.nodes > 0 {
+		this.lock.Lock()
+
+		if this.nodes > 0 {
+			nextNode = this.nodes
+			this.nodes--
+		}
+
+		this.lock.Unlock()
+	}
+
+	return
+}
+
+func (this *Distributor) copyAndFanOut(src int, notify chan<- bool) {
 	this.wg.Add(1)
 	defer this.wg.Done()
 
 	// Find the next destination node.
-	this.lock.Lock()
-	dst := this.nodes
-	this.nodes--
-	this.lock.Unlock()
+	dst := this.getNextNodeId()
 
 	if dst > 0 {
 		Copy(src, dst)
